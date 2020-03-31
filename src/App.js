@@ -74,8 +74,8 @@ class App extends React.Component {
         <Header />
         <div className="search grid">
           {/* Here we loop over our array of gifs from our state and we create multiple videos from it*/}
-          {this.state.gifs.map(gif => (
-            <Gif {...gif} />
+          {this.state.gifs.map((gif, index) => (
+            <Gif key={index} {...gif} />
           ))}
 
           <input
