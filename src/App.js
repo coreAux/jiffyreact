@@ -1,6 +1,7 @@
 import React from "react";
 import Header from "./Header";
 import UserHint from "./UserHint";
+import Gif from "./Gif";
 
 class App extends React.Component {
   constructor(props) {
@@ -8,7 +9,8 @@ class App extends React.Component {
     this.state = {
       searchTerm: "",
       hintText: "",
-      gif: null
+      gif: null,
+      gifs: []
     };
   }
 
@@ -33,7 +35,9 @@ class App extends React.Component {
 
       this.setState((prevState, props) => ({
         ...prevState,
-        gif: randomGif
+        gif: randomGif,
+        // Here we use our spread to take the previous gifs and spread them out and then add our new random gif onto the end
+        gifs: [...prevState.gifs, randomGif]
       }));
       console.log(data.data);
     } catch (error) {}
@@ -69,16 +73,11 @@ class App extends React.Component {
       <div className="page">
         <Header />
         <div className="search grid">
-          {/* Our stack of gif images */}
-          {/* It's only going to render out video when we have a gif in the state, we can test for it using && */}
-          {gif && (
-            <video
-              className="grid-item video"
-              autoPlay
-              loop
-              src={gif.images.original.mp4}
-            />
-          )}
+          {/* Here we loop over our array of gifs from our state and we create multiple videos from it*/}
+          {this.state.gifs.map(gif => (
+            <Gif {...gif} />
+          ))}
+
           <input
             className="input grid-item"
             placeholder="Type something"
