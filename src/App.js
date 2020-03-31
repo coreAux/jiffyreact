@@ -7,6 +7,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       searchTerm: "",
       hintText: "",
       gif: null,
@@ -30,6 +31,12 @@ class App extends React.Component {
       );
       const { data } = await response.json();
 
+      // Here we check if the array of results is empty, if it is we throw an error which will stop the code here and handle it in the catch area
+      if (!data.length) {
+        const errorMsg = `Nothing found for ${searchTerm}`;
+        throw errorMsg;
+      }
+
       // Here we grab a random result from our images
       const randomGif = randomChoice(data);
 
@@ -37,10 +44,18 @@ class App extends React.Component {
         ...prevState,
         gif: randomGif,
         // Here we use our spread to take the previous gifs and spread them out and then add our new random gif onto the end
-        gifs: [...prevState.gifs, randomGif]
+        gifs: [...prevState.gifs, randomGif],
+        // We turn of our loading spinner once gif has been fetched
+        loading: false,
+        hintText: `Hit enter to see more ${searchTerm}`
       }));
-      console.log(data.data);
-    } catch (error) {}
+    } catch (error) {
+      this.setState((prevState, props) => ({
+        ...prevState,
+        hintText: error,
+        loading: false
+      }));
+    }
   };
 
   handleChange = event => {
@@ -60,14 +75,17 @@ class App extends React.Component {
     const { value } = event.target;
     // When we have 2 or more characters in our search box and we have also pressed enterl, we then want to run a search
     if (value.length > 2 && event.key === "Enter") {
+      // Own addition to make spinner show earlier
+      this.setState({
+        loading: true
+      });
       // Here we call our searchGiphy function using the search term
       this.searchGiphy(value);
     }
-    console.log(event.key);
   };
 
   render() {
-    const { searchTerm, gif } = this.state;
+    const { searchTerm } = this.state;
 
     return (
       <div className="page">
