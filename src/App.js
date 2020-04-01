@@ -10,7 +10,6 @@ class App extends React.Component {
       loading: false,
       searchTerm: "",
       hintText: "",
-      gif: null,
       gifs: []
     };
   }
@@ -42,7 +41,6 @@ class App extends React.Component {
 
       this.setState((prevState, props) => ({
         ...prevState,
-        gif: randomGif,
         // Here we use our spread to take the previous gifs and spread them out and then add our new random gif onto the end
         gifs: [...prevState.gifs, randomGif],
         // We turn of our loading spinner once gif has been fetched
@@ -81,15 +79,35 @@ class App extends React.Component {
       });
       // Here we call our searchGiphy function using the search term
       this.searchGiphy(value);
+    } else if (event.key === "Escape") {
+      this.clearSearch();
     }
   };
 
+  // Here we reset our state by clearing everything out and making it default again
+  clearSearch = () => {
+    this.setState((prevState, props) => ({
+      ...prevState,
+      searchTerm: "",
+      hintText: "",
+      gifs: []
+    }));
+    // Here we grab the input and then focus the cursor back into it
+    this.textInput.focus();
+  };
+
+  handleClicks = () => {
+    this.textInput.focus();
+  };
+
   render() {
-    const { searchTerm } = this.state;
+    const { searchTerm, gifs } = this.state;
+    // Here we set a variable to see if we have any lengths
+    const hasResults = gifs.length;
 
     return (
-      <div className="page">
-        <Header />
+      <div className="page" onClick={this.handleClicks}>
+        <Header clearSearch={this.clearSearch} hasResults={hasResults} />
         <div className="search grid">
           {/* Here we loop over our array of gifs from our state and we create multiple videos from it*/}
           {this.state.gifs.map((gif, index) => (
@@ -102,6 +120,10 @@ class App extends React.Component {
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
             value={searchTerm}
+            autoFocus
+            ref={input => {
+              this.textInput = input;
+            }}
           />
         </div>
         <UserHint {...this.state} />
