@@ -79,7 +79,9 @@ class App extends React.Component {
       });
       // Here we call our searchGiphy function using the search term
       this.searchGiphy(value);
-    } else if (event.key === "Escape") {
+    }
+
+    if (event.key === "Esc" || event.key === "Esc") {
       this.clearSearch();
     }
   };
